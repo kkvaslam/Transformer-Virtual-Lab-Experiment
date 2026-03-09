@@ -1,1 +1,154 @@
-<!DOCTYPE html><html><body>Project placeholder. Replace with full index from Page.</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transformer Virtual Lab – Realistic Wiring</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <h1>Transformer Efficiency Virtual Lab – Realistic Wiring (Part 2)</h1>
+  <div class="controls">
+    <label>Load R (Ω):
+      <select id="loadSelect">
+        <option>5</option><option>20</option><option>40</option><option>80</option>
+        <option>120</option><option>140</option><option>160</option><option>200</option><option>280</option>
+      </select>
+    </label>
+    <button id="btnRun">Measure</button>
+    <button id="btnReset">Reset Wires</button>
+    <div class="menu">
+      <details>
+        <summary>Help ▾</summary>
+        <button id="btnShowSolution">Show Correct Wiring</button>
+        <button id="btnHideSolution">Hide Solution</button>
+      </details>
+      <details>
+        <summary>Export ▾</summary>
+        <button id="btnExportCSV">Export CSV</button>
+      </details>
+      <details>
+        <summary>Settings ▾</summary>
+        <label>Vp (RMS V): <input id="vpInput" type="number" step="0.1" value="5"></label>
+        <label>Ns/Np (ratio k): <input id="kInput" type="number" step="0.1" value="2.5"></label>
+        <label>R_p (Ω): <input id="rpInput" type="number" step="0.1" value="0.8"></label>
+        <label>R_s (Ω): <input id="rsInput" type="number" step="0.1" value="0.6"></label>
+        <label>P_core (W): <input id="pcoreInput" type="number" step="0.1" value="0.5"></label>
+      </details>
+    </div>
+  </div>
+</header>
+
+<main class="bench">
+  <!-- Left: Supply and primary meters -->
+  <section class="leftColumn">
+    <!-- AC Supply -->
+    <div class="module" id="supply">
+      <h3>AC Supply</h3>
+      <div class="block">
+        <div class="terminal" data-node="SUPPLY+">L+</div>
+        <div class="terminal" data-node="SUPPLY-">L−</div>
+      </div>
+    </div>
+
+    <!-- Primary Ammeter (series) -->
+    <div class="module" id="ammeterP">
+      <h3>Ammeter (Primary)</h3>
+      <div class="meter lcd" id="ammeterPDisplay">0.000 A</div>
+      <div class="block">
+        <div class="terminal" data-node="AP+">+</div>
+        <div class="terminal" data-node="AP-">−</div>
+      </div>
+      <small>Place in series with primary</small>
+    </div>
+
+    <!-- Primary Voltmeter (parallel) -->
+    <div class="module" id="voltmeterP">
+      <h3>Voltmeter (Primary)</h3>
+      <div class="meter lcd" id="voltmeterPDisplay">0.00 V</div>
+      <div class="block">
+        <div class="terminal" data-node="VP+">+</div>
+        <div class="terminal" data-node="VP-">−</div>
+      </div>
+      <small>Across primary</small>
+    </div>
+  </section>
+
+  <!-- Center: Transformer -->
+  <section class="centerColumn">
+    <div class="module" id="transformer">
+      <h3>Transformer</h3>
+      <div class="core">
+        <div class="coil primary">Primary</div>
+        <div class="coil secondary">Secondary</div>
+      </div>
+      <div class="block">
+        <div class="terminal" data-node="PRI_A">A</div>
+        <div class="terminal" data-node="PRI_E">E</div>
+      </div>
+      <div class="block">
+        <div class="terminal" data-node="SEC_a">a</div>
+        <div class="terminal" data-node="SEC_e">e</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right: Secondary meters and Load -->
+  <section class="rightColumn">
+    <!-- Secondary Ammeter (series) -->
+    <div class="module" id="ammeterS">
+      <h3>Ammeter (Secondary)</h3>
+      <div class="meter lcd" id="ammeterSDisplay">0.000 A</div>
+      <div class="block">
+        <div class="terminal" data-node="AS+">+</div>
+        <div class="terminal" data-node="AS-">−</div>
+      </div>
+      <small>Place in series with secondary</small>
+    </div>
+
+    <!-- Secondary Voltmeter (parallel) -->
+    <div class="module" id="voltmeterS">
+      <h3>Voltmeter (Secondary)</h3>
+      <div class="meter lcd" id="voltmeterSDisplay">0.00 V</div>
+      <div class="block">
+        <div class="terminal" data-node="VS+">+</div>
+        <div class="terminal" data-node="VS-">−</div>
+      </div>
+      <small>Across secondary / load</small>
+    </div>
+
+    <!-- Load Box -->
+    <div class="module" id="loadbox">
+      <h3>Load Box</h3>
+      <div class="block">
+        <div class="terminal" data-node="LOAD_L">L</div>
+        <div class="terminal" data-node="LOAD_R">R</div>
+      </div>
+      <div class="note">Select R from top bar</div>
+    </div>
+  </section>
+
+  <!-- Wiring Layer (SVG) -->
+  <svg id="wireLayer" class="wire-layer" xmlns="http://www.w3.org/2000/svg"></svg>
+</main>
+
+<footer class="readouts">
+  <div>Vp: <span id="vpRead">0.00</span> V</div>
+  <div>Ip: <span id="ipRead">0.000</span> A</div>
+  <div>Vs: <span id="vsRead">0.00</span> V</div>
+  <div>Is: <span id="isRead">0.000</span> A</div>
+  <div>Pin: <span id="pinRead">0.000</span> W</div>
+  <div>Pout: <span id="poutRead">0.000</span> W</div>
+  <div>η: <span id="etaRead">0.0</span></div>
+</footer>
+
+<script src="main.js"></script>
+<script src="scripts/transformerModel.js"></script>
+<script src="scripts/wiring.js"></script>
+<script src="scripts/meters.js"></script>
+<script src="scripts/ui.js"></script>
+</body>
+</html>
+
+
