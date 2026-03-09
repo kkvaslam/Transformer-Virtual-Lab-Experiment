@@ -1,2 +1,2 @@
-# Transformer Virtual Lab – Realistic Wiring
+# Transformer Virtual Lab Experiment
 See detailed content in project page.
