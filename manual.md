@@ -1,4 +1,4 @@
-# Student Instructions – Transformer Efficiency (Part 2)
+# Student Instructions – Transformer Efficiency 
 
 ## Aim
 Study transformer efficiency (η) as a function of resistive load (R).
